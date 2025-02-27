@@ -1,43 +1,33 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useThemeColor } from '@/components/Themed';
+import { TabBarIcon } from '@/components/TabBarIcon';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const tabBarBackground = useThemeColor({}, 'tabBarBackground');
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarBackground: () => <></>,
+        tabBarStyle: { 
+          backgroundColor: tabBarBackground,
+          elevation: 0,
+          borderTopWidth: 0,
+        },
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
       }}>
       <Tabs.Screen
-        name="index"
+        name="connection"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Connection',
+          tabBarIcon: ({ color }) => <TabBarIcon name="wifi" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="index"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Control',
+          tabBarIcon: ({ color }) => <TabBarIcon name="game-controller" color={color} />,
         }}
       />
     </Tabs>

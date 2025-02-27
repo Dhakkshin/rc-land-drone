@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
+import { router } from 'expo-router';
+import { connectToDrone } from '@/services/api';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Button } from '@/components/Button';
@@ -7,11 +9,25 @@ import { TextInput } from '@/components/TextInput';
 
 export default function ConnectionScreen() {
   const [ipAddress, setIpAddress] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
 
-  const handleConnect = () => {
-    if (ipAddress.trim()) {
-      console.log('Connecting to:', ipAddress);
-      // TODO: Add connection logic
+  const handleConnect = async () => {
+    if (!ipAddress.trim()) return;
+
+    setIsConnecting(true);
+    try {
+      const response = await connectToDrone(ipAddress);
+      if (response.success) {
+        Alert.alert('Success', response.message, [
+          { text: 'OK', onPress: () => router.push('/(tabs)') }
+        ]);
+      } else {
+        Alert.alert('Error', response.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to connect to drone');
+    } finally {
+      setIsConnecting(false);
     }
   };
 
@@ -27,8 +43,11 @@ export default function ConnectionScreen() {
       />
       <Button
         onPress={handleConnect}
-        title="Connect"
-        style={styles.button}
+        title={isConnecting ? "Connecting..." : "Connect"}
+        style={StyleSheet.compose(
+          styles.button,
+          isConnecting ? styles.buttonDisabled : {}
+        )}
       />
     </ThemedView>
   );
@@ -58,5 +77,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
 });

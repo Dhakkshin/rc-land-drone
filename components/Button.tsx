@@ -1,10 +1,10 @@
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { ThemedText } from './ThemedText';
 
 interface ButtonProps {
   onPress: () => void;
   title: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Button({ onPress, title, style }: ButtonProps) {

@@ -34,7 +34,6 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           statusBarTranslucent: true,
-          android_navigationBarColor: 'transparent',
           navigationBarColor: 'transparent',
         }}
       >

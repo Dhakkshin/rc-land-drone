@@ -15,12 +15,9 @@ export function DPad({
 }: DPadProps) {
   // Function to handle stop button press
   const handleStop = () => {
-    // Call the provided stop handler if available
     if (onStopPress) {
       onStopPress();
     }
-
-    // Send stop command to the API
     sendCommand("stop", 0).catch((error) => {
       console.error("Failed to send stop command:", error);
     });
@@ -30,13 +27,11 @@ export function DPad({
   const handleDirectionPress = (
     direction: "up" | "down" | "left" | "right"
   ) => {
-    // Call the provided direction handler
     onDirectionPress(direction);
   };
 
   // Handle direction button release - automatically stop
   const handleDirectionRelease = () => {
-    // Automatically send stop command when button is released
     sendCommand("stop", 0).catch((error) => {
       console.error("Failed to send stop command:", error);
     });
@@ -47,7 +42,7 @@ export function DPad({
       <View style={styles.row}>
         <View style={styles.spacer} />
         <Pressable
-          onPress={() => handleDirectionPress("up")}
+          onPressIn={() => handleDirectionPress("up")}
           onPressOut={handleDirectionRelease}
           style={({ pressed }) => [styles.button, pressed && styles.pressed]}
         >
@@ -57,13 +52,12 @@ export function DPad({
       </View>
       <View style={styles.row}>
         <Pressable
-          onPress={() => handleDirectionPress("left")}
+          onPressIn={() => handleDirectionPress("left")}
           onPressOut={handleDirectionRelease}
           style={({ pressed }) => [styles.button, pressed && styles.pressed]}
         >
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
-        {/* Stop button */}
         <Pressable
           onPress={handleStop}
           style={({ pressed }) => [
@@ -74,7 +68,7 @@ export function DPad({
           <Ionicons name="stop" size={24} color="white" />
         </Pressable>
         <Pressable
-          onPress={() => handleDirectionPress("right")}
+          onPressIn={() => handleDirectionPress("right")}
           onPressOut={handleDirectionRelease}
           style={({ pressed }) => [styles.button, pressed && styles.pressed]}
         >
@@ -84,7 +78,7 @@ export function DPad({
       <View style={styles.row}>
         <View style={styles.spacer} />
         <Pressable
-          onPress={() => handleDirectionPress("down")}
+          onPressIn={() => handleDirectionPress("down")}
           onPressOut={handleDirectionRelease}
           style={({ pressed }) => [styles.button, pressed && styles.pressed]}
         >

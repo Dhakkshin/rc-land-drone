@@ -1,40 +1,93 @@
-import { StyleSheet, View, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { sendCommand } from "@/services/api";
 
 interface DPadProps {
-  onDirectionPress: (direction: 'up' | 'down' | 'left' | 'right') => void;
+  onDirectionPress: (direction: "up" | "down" | "left" | "right") => void;
+  onStopPress?: () => void;
+  throttleValue?: number;
 }
 
-export function DPad({ onDirectionPress }: DPadProps) {
+export function DPad({
+  onDirectionPress,
+  onStopPress,
+  throttleValue = 0,
+}: DPadProps) {
+  // Function to handle stop button press
+  const handleStop = () => {
+    // Call the provided stop handler if available
+    if (onStopPress) {
+      onStopPress();
+    }
+
+    // Send stop command to the API
+    sendCommand("stop", 0).catch((error) => {
+      console.error("Failed to send stop command:", error);
+    });
+  };
+
+  // Handle direction button press
+  const handleDirectionPress = (
+    direction: "up" | "down" | "left" | "right"
+  ) => {
+    // Call the provided direction handler
+    onDirectionPress(direction);
+  };
+
+  // Handle direction button release - automatically stop
+  const handleDirectionRelease = () => {
+    // Automatically send stop command when button is released
+    sendCommand("stop", 0).catch((error) => {
+      console.error("Failed to send stop command:", error);
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.spacer} />
-        <Pressable 
-          onPress={() => onDirectionPress('up')}
-          style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+        <Pressable
+          onPress={() => handleDirectionPress("up")}
+          onPressOut={handleDirectionRelease}
+          style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        >
           <Ionicons name="chevron-up" size={24} color="white" />
         </Pressable>
         <View style={styles.spacer} />
       </View>
       <View style={styles.row}>
-        <Pressable 
-          onPress={() => onDirectionPress('left')}
-          style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+        <Pressable
+          onPress={() => handleDirectionPress("left")}
+          onPressOut={handleDirectionRelease}
+          style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        >
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
-        <View style={styles.centerButton} />
-        <Pressable 
-          onPress={() => onDirectionPress('right')}
-          style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+        {/* Stop button */}
+        <Pressable
+          onPress={handleStop}
+          style={({ pressed }) => [
+            styles.centerButton,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Ionicons name="stop" size={24} color="white" />
+        </Pressable>
+        <Pressable
+          onPress={() => handleDirectionPress("right")}
+          onPressOut={handleDirectionRelease}
+          style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        >
           <Ionicons name="chevron-forward" size={24} color="white" />
         </Pressable>
       </View>
       <View style={styles.row}>
         <View style={styles.spacer} />
-        <Pressable 
-          onPress={() => onDirectionPress('down')}
-          style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+        <Pressable
+          onPress={() => handleDirectionPress("down")}
+          onPressOut={handleDirectionRelease}
+          style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        >
           <Ionicons name="chevron-down" size={24} color="white" />
         </Pressable>
         <View style={styles.spacer} />
@@ -48,16 +101,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   button: {
     width: 60,
     height: 60,
-    backgroundColor: '#2196F3',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#2196F3",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
   },
   pressed: {
@@ -70,7 +123,9 @@ const styles = StyleSheet.create({
   centerButton: {
     width: 60,
     height: 60,
-    backgroundColor: '#1976D2',
+    backgroundColor: "#F44336", // Red for stop button
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
   },
 });
